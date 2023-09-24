@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>Document</title>
+</head>
+<style>
+    body {
+        background-color: rgb(255, 255, 255);
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .d1 {
+        /* border: solid; */
+        display: grid;
+        grid-template-columns: 33% 33% 33%;
+        grid-template-rows: 33% 33% 33%;
+        width: 400px;
+        height: 400px;
+        color: rgb(150, 146, 146);
+    }
+
+    .cell {
+        border: solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 50px;
+        border-top: none;
+        border-left: none;
+        cursor: pointer;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size: 70px;
+        transition-duration: 1s;
+    }
+
+    .cell:hover {
+        /* background-color: rgba(240, 240, 240, 0.596); */
+        border-bottom: 3px solid green;
+      
+        box-shadow: 1px 10px 10px 10px  gray;
+    }
+
+    .cell:nth-child(3) {
+        border-right: none;
+     
+    }
+
+    .cell:nth-child(3):hover {
+        border-right: none;
+    }
+
+    .cell:nth-child(6) {
+        border-right: none;
+    }
+
+    .cell:nth-child(9) {
+        border-right: none;
+        border-bottom: none;
+    }
+
+    .cell:nth-child(7) {
+        border-bottom: none;
+    }
+
+    .cell:nth-child(8) {
+        border-bottom: none;
+    }
+
+    .d2 {
+        width: 500px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 30px;
+        font-weight: 900;
+        background-color: white;
+    }
+
+    .players {
+        display: flex;
+        /* border: solid; */
+        width: 270px;
+        color: rgb(0, 0, 0);
+        font-weight: 900;
+        justify-content: space-evenly;
+    }
+    #restart{
+        width: 200px;
+        height: 40px;
+        font-size: 20px;
+        background-color: white;
+        border: 0.3px solid;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    #restart:hover{
+        background-color: black;
+        color: white;
+    }
+</style>
+
+<body id="body">
+    <div class="d2">TIC-TAC GAME</div>
+    <div class="d1">
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+        <div class="cell"></div>
+    </div>
+    <div class="players">
+        <div id="player1">player1 : <p id="p1"></p>
+        </div>
+        <div id="player2">player2 : <p></p>
+        </div>
+    </div>
+    <button id="restart">Restart</button>
+   
+</body>
+<script>
+    
+ 
+    document.addEventListener("DOMContentLoaded", function () {
+            let restartbtn = document.querySelector("#restart");
+            let cells = document.querySelectorAll(".cell");
+            let player1 = document.querySelector("#player1");
+            let player2 = document.querySelector("#player2");
+            let d2=document.querySelector('.d2')
+            let currentplayer = "x";
+            let nextplayer = "o";
+            let playernow = currentplayer;
+            let player1Score = 0;
+            let player2Score = 0;
+            let tieCounter = 0;
+
+            function startgame() {
+                cells.forEach((cell) => {
+                    cell.addEventListener("click", (e) => {
+                        if (e.target.innerText === "") {
+                            if (playernow === "x") {
+                                e.target.innerText = playernow;
+                                playernow = "o";
+                            } else if (playernow === "o") {
+                                e.target.innerText = playernow;
+                                playernow = "x";
+                            }
+                            let winner = check();
+                            if (winner) {
+                                console.log(`${winner} wins`);
+                                if (winner === "x") {
+                                    player1Score++;
+                                    d2.innerText='PLAYER 1 WIN'
+                                } else {
+                                    player2Score++;
+                                    d2.innerText='PLAYER 2 WIN'
+                                }
+                                player1.innerHTML = `Player 1 (${player1Score})`;
+                                player2.innerHTML = `Player 2 (${player2Score})`;
+                                setTimeout(resetGame, 500);
+                            } else {
+                                tieCounter++;
+                                if (tieCounter === 9) {
+                                    d2.innerText="It's a Tie!";
+                                    setTimeout(resetGame, 500);
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            function check() {
+                let win = [
+                    [0, 1, 2],
+                    [3, 4, 5],
+                    [6, 7, 8],
+                    [0, 3, 6],
+                    [1, 4, 7],
+                    [2, 5, 8],
+                    [0, 4, 8],
+                    [2, 4, 6],
+                ];
+                for (let i = 0; i < win.length; i++) {
+                    let [pos1, pos2, pos3] = win[i];
+                    if (
+                        cells[pos1].innerText !== "" &&
+                        cells[pos1].innerText === cells[pos2].innerText &&
+                        cells[pos2].innerText === cells[pos3].innerText
+                    ) {
+                        return cells[pos1].innerText;
+                    }
+                }
+                return null;
+            }
+
+            function resetGame() {
+                cells.forEach((cell) => {
+                    cell.innerText = "";
+                });
+                playernow = currentplayer;
+                tieCounter = 0;
+            }
+
+            restartbtn.addEventListener("click", () => {
+                player1Score = 0;
+                player2Score = 0;
+                player1.innerHTML = `Player 1 (${player1Score})`;
+                player2.innerHTML = `Player 2 (${player2Score})`;
+                resetGame();
+            });
+
+            startgame();
+        });
+   
+    </script>
+
+
+
+
+
